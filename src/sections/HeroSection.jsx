@@ -37,7 +37,7 @@ const StatCard = ({ icon: Icon, value, label, suffix = "+", index }) => (
     initial={{ opacity: 0, y: 30 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.8 + index * 0.1, duration: 0.8 }}
-    className="glass-premium flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl sm:rounded-3xl hover:bg-white/10 transition-colors duration-500 overflow-hidden md:backdrop-blur-[25px] backdrop-blur-none"
+    className="glass-premium flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl sm:rounded-3xl hover:bg-white/10 transition-colors duration-500 overflow-hidden md:backdrop-blur-[25px] backdrop-blur-none bg-white/5 border border-white/10"
   >
     <div className="mb-2 sm:mb-3 p-2 rounded-xl bg-gold/10">
       <Icon size={20} className="text-gold sm:w-6 sm:h-6" />
@@ -59,12 +59,19 @@ export default function HeroSection() {
   const containerRef = useRef(null)
   
   const isMobile = useMediaQuery('(max-width: 768px)')
+  const [isScrolled, setIsScrolled] = useState(false)
   const { scrollY } = useScroll()
   
-  // Parallax / Scroll transforms - optimized for mobile
-  // Vanish completely by 400px scroll, earlier but smoother on mobile
-  const y1 = useTransform(scrollY, [0, 500], [0, isMobile ? 100 : 200])
-  const opacity = useTransform(scrollY, [0, isMobile ? 350 : 300], [1, 0])
+  // Track scroll for state-based mobile transition
+  useEffect(() => {
+    return scrollY.onChange((latest) => {
+      setIsScrolled(latest > 50)
+    })
+  }, [scrollY])
+
+  // Parallax / Scroll transforms - only for desktop for performance
+  const y1 = useTransform(scrollY, [0, 500], [0, 200])
+  const opacity = useTransform(scrollY, [0, 300], [1, 0])
   
   // Disable scale transform on mobile for performance
   const scale = useTransform(scrollY, [0, 500], isMobile ? [1, 1] : [1, 1.1])
@@ -125,26 +132,28 @@ export default function HeroSection() {
         }}
       />
 
-      {/* Floating Glow Elements */}
-      <motion.div
-        animate={{ 
-          scale: [1, 1.3, 1],
-          opacity: [0.3, 0.6, 0.3],
-          x: [0, 50, 0],
-          y: [0, -30, 0]
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-gold/5 blur-[120px] rounded-full pointer-events-none z-10"
-      />
+      {/* Floating Glow Elements - Hidden on mobile for performance */}
+      {!isMobile && (
+        <motion.div
+          animate={{ 
+            scale: [1, 1.3, 1],
+            opacity: [0.3, 0.6, 0.3],
+            x: [0, 50, 0],
+            y: [0, -30, 0]
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-gold/5 blur-[120px] rounded-full pointer-events-none z-10"
+        />
+      )}
 
       {/* Content Container - Unified Scroll Transform */}
       <div className="relative z-30 w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-32 pb-20">
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          animate="visible"
-          style={{ y: y1, opacity }}
-          className="will-change-[transform,opacity]"
+          animate={isMobile ? (isScrolled ? { opacity: 0, y: -20, transition: { duration: 0.4 } } : "visible") : "visible"}
+          style={!isMobile ? { y: y1, opacity } : {}}
+          className="will-change-[transform,opacity] backface-hidden"
         >
           {/* Layout Wrapper */}
           <div className="flex flex-col lg:flex-row items-center lg:items-end justify-between gap-16">
@@ -236,9 +245,13 @@ export default function HeroSection() {
         </div>
       </motion.div>
 
-      {/* Decorative Corner Accents */}
-      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-radial-at-tr from-gold/5 to-transparent pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-radial-at-bl from-gold/5 to-transparent pointer-events-none" />
+      {/* Decorative Corner Accents - Hidden on mobile */}
+      {!isMobile && (
+        <>
+          <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-radial-at-tr from-gold/5 to-transparent pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-radial-at-bl from-gold/5 to-transparent pointer-events-none" />
+        </>
+      )}
     </section>
   )
 }
