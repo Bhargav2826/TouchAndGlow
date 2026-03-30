@@ -186,7 +186,7 @@ export default function HeroSection() {
               <motion.div variants={itemVariants} className="flex items-center justify-center lg:justify-start gap-3 mb-8">
                 <span className="w-8 h-px bg-gold/50" />
                 <span className="text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-gold">
-                  Premium Beauty Rituals
+                  Bangalore's Premium Beauty Rituals
                 </span>
                 <span className="w-8 h-px bg-gold/50" />
               </motion.div>

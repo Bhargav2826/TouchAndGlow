@@ -122,7 +122,7 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex gap-3 text-white/50 text-sm">
                 <MapPin size={16} className="mt-0.5 shrink-0 text-gold/70" />
-                <span>12 Luxury Lane, Bandra West,<br />Mumbai, Maharashtra 400050</span>
+                <span>45 Lavelle Road, Shanthala Nagar,<br />Bangalore, KA 560001</span>
               </li>
               <li className="flex gap-3 text-white/50 text-sm">
                 <Phone size={16} className="mt-0.5 shrink-0 text-gold/70" />

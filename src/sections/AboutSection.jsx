@@ -79,9 +79,9 @@ export default function AboutSection() {
             </h2>
 
             <p className="text-white/60 leading-relaxed mb-4">
-              Founded in the heart of luxury beauty, Touch &amp; Glow was born from a simple 
-              belief: every person deserves to feel extraordinary. We are not just a salon — 
-              we are an experience, a sanctuary where transformation begins.
+              Founded in the heart of Bangalore's luxury beauty scene, Touch &amp; Glow was born 
+              from a simple belief: every person deserves to feel extraordinary. We are not just 
+              a salon — we are a sanctuary where transformation begins.
             </p>
             <p className="text-white/50 leading-relaxed mb-8">
               Our team of internationally trained stylists, colorists, and beauty experts 
