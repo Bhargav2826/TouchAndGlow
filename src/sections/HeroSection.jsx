@@ -37,7 +37,7 @@ const StatCard = ({ icon: Icon, value, label, suffix = "+", index }) => (
     initial={{ opacity: 0, y: 30 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.8 + index * 0.1, duration: 0.8 }}
-    className="glass-premium flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl sm:rounded-3xl hover:bg-white/10 transition-colors duration-500"
+    className="glass-premium flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl sm:rounded-3xl hover:bg-white/10 transition-colors duration-500 overflow-hidden md:backdrop-blur-[25px] backdrop-blur-none"
   >
     <div className="mb-2 sm:mb-3 p-2 rounded-xl bg-gold/10">
       <Icon size={20} className="text-gold sm:w-6 sm:h-6" />
@@ -61,9 +61,10 @@ export default function HeroSection() {
   const isMobile = useMediaQuery('(max-width: 768px)')
   const { scrollY } = useScroll()
   
-  // Parallax / Scroll transforms
-  const y1 = useTransform(scrollY, [0, 500], [0, 200])
-  const opacity = useTransform(scrollY, [0, 300], [1, 0])
+  // Parallax / Scroll transforms - optimized for mobile
+  // Vanish completely by 400px scroll, earlier but smoother on mobile
+  const y1 = useTransform(scrollY, [0, 500], [0, isMobile ? 100 : 200])
+  const opacity = useTransform(scrollY, [0, isMobile ? 350 : 300], [1, 0])
   
   // Disable scale transform on mobile for performance
   const scale = useTransform(scrollY, [0, 500], isMobile ? [1, 1] : [1, 1.1])
@@ -86,11 +87,11 @@ export default function HeroSection() {
   }
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 60, filter: 'blur(10px)' },
+    hidden: { opacity: 0, y: 60, filter: isMobile ? 'none' : 'blur(10px)' },
     visible: {
       opacity: 1,
       y: 0,
-      filter: 'blur(0px)',
+      filter: 'none',
       transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] },
     },
   }
@@ -136,80 +137,83 @@ export default function HeroSection() {
         className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-gold/5 blur-[120px] rounded-full pointer-events-none z-10"
       />
 
-      {/* Content Container */}
+      {/* Content Container - Unified Scroll Transform */}
       <div className="relative z-30 w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-32 pb-20">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           style={{ y: y1, opacity }}
-          className="flex flex-col lg:flex-row items-center lg:items-end justify-between gap-16"
+          className="will-change-[transform,opacity]"
         >
-          {/* Main Copy Area */}
-          <div className="max-w-3xl text-center lg:text-left">
-            <motion.div variants={itemVariants} className="flex items-center justify-center lg:justify-start gap-3 mb-8">
-              <span className="w-8 h-px bg-gold/50" />
-              <span className="text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-gold">
-                Premium Beauty Rituals
-              </span>
-              <span className="w-8 h-px bg-gold/50" />
-            </motion.div>
-
-            <motion.h1 
-              variants={itemVariants} 
-              className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-white leading-[0.95] tracking-tighter mb-8"
-            >
-              Elevate <br />
-              <span className="font-['Cormorant_Garamond'] italic font-normal gold-text bg-300% animate-gradient-text tracking-normal">
-                Your Style
-              </span>
-            </motion.h1>
-
-            <motion.p 
-              variants={itemVariants} 
-              className="text-base sm:text-lg md:text-xl text-white/60 max-w-xl leading-relaxed mb-12 mx-auto lg:mx-0 font-light"
-            >
-              Experience the pinnacle of luxury grooming. Our master artisans blend 
-              timeless techniques with modern aesthetics to reveal your most radiant self.
-            </motion.p>
-
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start">
-              <button 
-                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                className="group relative px-10 py-5 bg-gold rounded-full overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(212,175,55,0.45)] active:scale-95"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-600 to-yellow-400 bg-200% group-hover:animate-shimmer" />
-                <span className="relative z-10 flex items-center gap-3 text-black font-bold text-sm tracking-wider uppercase">
-                  Book Appointment <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+          {/* Layout Wrapper */}
+          <div className="flex flex-col lg:flex-row items-center lg:items-end justify-between gap-16">
+            {/* Main Copy Area */}
+            <div className="max-w-3xl text-center lg:text-left">
+              <motion.div variants={itemVariants} className="flex items-center justify-center lg:justify-start gap-3 mb-8">
+                <span className="w-8 h-px bg-gold/50" />
+                <span className="text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-gold">
+                  Premium Beauty Rituals
                 </span>
-              </button>
+                <span className="w-8 h-px bg-gold/50" />
+              </motion.div>
 
-              <button 
-                onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-                className="group px-10 py-5 rounded-full border border-white/20 glass hover:bg-white/5 transition-all duration-500 flex items-center gap-3 text-white font-semibold text-sm tracking-wider uppercase active:scale-95"
+              <motion.h1 
+                variants={itemVariants} 
+                className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-white leading-[0.95] tracking-tighter mb-8"
               >
-                Explore Services <Play size={14} className="fill-white group-hover:scale-125 transition-transform" />
-              </button>
+                Elevate <br />
+                <span className="font-['Cormorant_Garamond'] italic font-normal gold-text bg-300% animate-gradient-text tracking-normal">
+                  Your Style
+                </span>
+              </motion.h1>
+
+              <motion.p 
+                variants={itemVariants} 
+                className="text-base sm:text-lg md:text-xl text-white/60 max-w-xl leading-relaxed mb-12 mx-auto lg:mx-0 font-light"
+              >
+                Experience the pinnacle of luxury grooming. Our master artisans blend 
+                timeless techniques with modern aesthetics to reveal your most radiant self.
+              </motion.p>
+
+              <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start">
+                <button 
+                  onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="group relative px-10 py-5 bg-gold rounded-full overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(212,175,55,0.45)] active:scale-95"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-600 to-yellow-400 bg-200% group-hover:animate-shimmer" />
+                  <span className="relative z-10 flex items-center gap-3 text-black font-bold text-sm tracking-wider uppercase">
+                    Book Appointment <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </button>
+
+                <button 
+                  onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="group px-10 py-5 rounded-full border border-white/20 glass hover:bg-white/5 transition-all duration-500 flex items-center gap-3 text-white font-semibold text-sm tracking-wider uppercase active:scale-95"
+                >
+                  Explore Services <Play size={14} className="fill-white group-hover:scale-125 transition-transform" />
+                </button>
+              </motion.div>
+            </div>
+
+            {/* Large Stylized Logo Mark / Secondary Visual */}
+            <motion.div 
+              variants={itemVariants}
+              className="hidden xl:flex flex-col items-end text-right opacity-20 pointer-events-none select-none"
+            >
+              <span className="text-[180px] font-['Cormorant_Garamond'] leading-none text-white tracking-tighter">TG</span>
+              <span className="text-xl tracking-[1em] text-gold -mt-8">SALON LUXE</span>
             </motion.div>
           </div>
 
-          {/* Large Stylized Logo Mark / Secondary Visual */}
-          <motion.div 
-            variants={itemVariants}
-            className="hidden xl:flex flex-col items-end text-right opacity-20 pointer-events-none select-none"
-          >
-            <span className="text-[180px] font-['Cormorant_Garamond'] leading-none text-white tracking-tighter">TG</span>
-            <span className="text-xl tracking-[1em] text-gold -mt-8">SALON LUXE</span>
-          </motion.div>
+          {/* Stats Row - Now inside the animation container */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-24 mb-10 translate-z-0">
+            <StatCard index={0} icon={Award} value="10" label="Years Excellence" />
+            <StatCard index={1} icon={Users} value="5000" label="Happy Clients" />
+            <StatCard index={2} icon={Star} value="25" label="Master Stylists" />
+            <StatCard index={3} icon={Heart} value="98" label="Satisfaction" suffix="%" />
+          </div>
         </motion.div>
-
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-24 mb-10">
-          <StatCard index={0} icon={Award} value="10" label="Years Excellence" />
-          <StatCard index={1} icon={Users} value="5000" label="Happy Clients" />
-          <StatCard index={2} icon={Star} value="25" label="Master Stylists" />
-          <StatCard index={3} icon={Heart} value="98" label="Satisfaction" suffix="%" />
-        </div>
       </div>
 
       {/* Elegant Scroll Indicator */}
