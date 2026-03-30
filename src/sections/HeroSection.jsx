@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Play, Star, Award, Users, Heart } from 'lucide-react'
 import { useMediaQuery } from '../hooks/useMediaQuery'
+import HeroSkeleton from '../components/HeroSkeleton'
 import heroImg from '../assets/hero_salon.png'
 
 // --- Components ---
@@ -59,15 +60,24 @@ export default function HeroSection() {
   const containerRef = useRef(null)
   
   const isMobile = useMediaQuery('(max-width: 768px)')
+  const [isLoaded, setIsLoaded] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const { scrollY } = useScroll()
   
-  // Track scroll for state-based mobile transition
+  // High-performance scroll detection for mobile (IntersectionObserver)
   useEffect(() => {
-    return scrollY.onChange((latest) => {
-      setIsScrolled(latest > 50)
-    })
-  }, [scrollY])
+    if (!isMobile) return
+    
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsScrolled(!entry.isIntersecting)
+      },
+      { threshold: 0.9 }
+    )
+
+    if (containerRef.current) observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [isMobile])
 
   // Parallax / Scroll transforms - only for desktop for performance
   const y1 = useTransform(scrollY, [0, 500], [0, 200])
@@ -101,6 +111,20 @@ export default function HeroSection() {
       filter: 'none',
       transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] },
     },
+  }
+
+  if (!isLoaded && heroImg) {
+    return (
+      <>
+        <HeroSkeleton />
+        <img 
+          src={heroImg} 
+          onLoad={() => setIsLoaded(true)} 
+          className="hidden" 
+          alt="Preloader" 
+        />
+      </>
+    )
   }
 
   return (
@@ -151,9 +175,9 @@ export default function HeroSection() {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          animate={isMobile ? (isScrolled ? { opacity: 0, y: -20, transition: { duration: 0.4 } } : "visible") : "visible"}
+          animate="visible"
           style={!isMobile ? { y: y1, opacity } : {}}
-          className="will-change-[transform,opacity] backface-hidden"
+          className={`hero-vanish-container ${isMobile && isScrolled ? 'hero-vanished' : ''}`}
         >
           {/* Layout Wrapper */}
           <div className="flex flex-col lg:flex-row items-center lg:items-end justify-between gap-16">

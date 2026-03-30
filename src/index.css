@@ -248,7 +248,7 @@
   animation-play-state: paused;
 }
 
-/* Noise texture overlay */
+/* Noise texture overlay - Disabled on mobile for performance */
 .noise-overlay::after {
   content: '';
   position: absolute;
@@ -256,6 +256,12 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 5;
+}
+
+@media (max-width: 768px) {
+  .noise-overlay::after {
+    display: none !important;
+  }
 }
 
 /* Section divider */
@@ -282,4 +288,27 @@
 
 .img-zoom:hover img {
   transform: scale(1.08);
+}
+
+/* --- Native CSS Vanish (Mobile Performance) --- */
+.hero-vanish-container {
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.hero-vanished {
+  opacity: 0 !important;
+  transform: translateY(-20px) !important;
+  pointer-events: none;
+}
+
+@keyframes pulse-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-bg {
+  background: linear-gradient(90deg, #121212 25%, #1a1a1a 50%, #121212 75%);
+  background-size: 200% 100%;
+  animation: pulse-shimmer 2s infinite linear;
 }
