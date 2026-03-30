@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Play, Star, Award, Users, Heart } from 'lucide-react'
 import { useMediaQuery } from '../hooks/useMediaQuery'
+import heroImg from '../assets/hero_salon.png'
 
 // --- Components ---
 
@@ -100,23 +101,16 @@ export default function HeroSection() {
       onMouseMove={handleMouseMove}
       className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-black noise-overlay"
     >
-      {/* Background Video with Slow Zoom */}
+      {/* Background Static Image with Slow Zoom */}
       <motion.div 
         style={{ scale }} 
         className="absolute inset-0 z-0 will-change-transform"
       >
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover opacity-60 translate-z-0"
-        >
-          <source 
-            src="https://assets.mixkit.co/videos/preview/mixkit-stylist-washing-a-clients-hair-in-a-salon-43405-large.mp4" 
-            type="video/mp4" 
-          />
-        </video>
+        <img
+          src={heroImg}
+          alt="Luxury Salon Interior"
+          className="w-full h-full object-cover opacity-60"
+        />
         {/* Multi-layered Overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/20 to-black/90 z-10" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60 z-10" />
