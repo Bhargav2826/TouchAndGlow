@@ -22,8 +22,8 @@ function GalleryCard({ item, index }) {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={inView ? { opacity: 1, scale: 1 } : {}}
       transition={{ duration: 0.7, delay: index * 0.12, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className={`group relative img-zoom cursor-pointer ${item.tall ? 'row-span-2' : 'row-span-1'}`}
-      style={{ height: '100%' }} // Let grid handle height
+      className={`group relative img-zoom cursor-pointer ${item.tall ? 'sm:row-span-2' : 'sm:row-span-1'}`}
+      style={{ minHeight: '300px' }} // Ensure visibility on mobile
     >
       <img
         src={item.src}
@@ -77,8 +77,8 @@ export default function GallerySection() {
           </p>
         </motion.div>
 
-        {/* Masonry-feel grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[280px] sm:auto-rows-[240px]">
+        {/* Responsive grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[300px] sm:auto-rows-[240px]">
           {galleryItems.map((item, i) => (
             <GalleryCard key={item.label} item={item} index={i} />
           ))}

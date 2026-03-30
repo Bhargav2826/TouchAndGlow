@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Play, Star, Award, Users, Heart } from 'lucide-react'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 
 // --- Components ---
 
@@ -56,10 +57,15 @@ export default function HeroSection() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const containerRef = useRef(null)
   
+  const isMobile = useMediaQuery('(max-width: 768px)')
   const { scrollY } = useScroll()
+  
+  // Parallax / Scroll transforms
   const y1 = useTransform(scrollY, [0, 500], [0, 200])
   const opacity = useTransform(scrollY, [0, 300], [1, 0])
-  const scale = useTransform(scrollY, [0, 500], [1, 1.1])
+  
+  // Disable scale transform on mobile for performance
+  const scale = useTransform(scrollY, [0, 500], isMobile ? [1, 1] : [1, 1.1])
 
   const handleMouseMove = (e) => {
     if (!containerRef.current) return
@@ -95,13 +101,16 @@ export default function HeroSection() {
       className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-black noise-overlay"
     >
       {/* Background Video with Slow Zoom */}
-      <motion.div style={{ scale }} className="absolute inset-0 z-0">
+      <motion.div 
+        style={{ scale }} 
+        className="absolute inset-0 z-0 will-change-transform"
+      >
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="w-full h-full object-cover opacity-60"
+          className="w-full h-full object-cover opacity-60 translate-z-0"
         >
           <source 
             src="https://assets.mixkit.co/videos/preview/mixkit-stylist-washing-a-clients-hair-in-a-salon-43405-large.mp4" 
