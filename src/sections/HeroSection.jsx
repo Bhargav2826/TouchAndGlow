@@ -72,7 +72,7 @@ export default function HeroSection() {
       ([entry]) => {
         setIsScrolled(!entry.isIntersecting)
       },
-      { threshold: 0.9 }
+      { threshold: 0.1 }
     )
 
     if (containerRef.current) observer.observe(containerRef.current)
@@ -129,6 +129,7 @@ export default function HeroSection() {
 
   return (
     <section 
+      id="home"
       ref={containerRef}
       onMouseMove={handleMouseMove}
       className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-black noise-overlay"
